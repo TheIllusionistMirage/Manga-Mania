@@ -141,7 +141,10 @@ class MangaMania(QMainWindow):
         self.statusBar().showMessage('Ready')
 
         # Set initial geometry
-        self.setGeometry(0, 0, 1100, 700)
+        #self.setGeometry(0, 0, 1100, 700)
+        #self.resize(1100, 700)
+        self.move(0,0)
+        self.setMinimumSize(1100, 650)
         self.setWindowTitle('MangaFox Search Scraper')
         
         # Search action
@@ -182,7 +185,7 @@ class MangaMania(QMainWindow):
         
         self.chapterList = QListWidget(self)
         self.chapterList.move(20, 60)
-        self.chapterList.resize(200, 590)
+        self.chapterList.resize(200, 560)
         self.chapterList.doubleClicked.connect(self.openSelectedChapter)
         
         self.chapterURLs = {}
@@ -202,6 +205,20 @@ class MangaMania(QMainWindow):
         self.nextLabel.adjustSize()
         #self.nextLabel.resize(50, 50)
         self.nextLabel.move(560, 40)
+        
+        
+        #self.pgPixmap = QPixmap('resources/images/search-icon.png')
+        '''
+        self.pgPixmap = QPixmap('current.jpg')
+            
+        self.pgLabel = QLabel(self)
+        self.pgLabel.setPixmap(self.pgPixmap)
+        self.pgLabel.adjustSize()
+        self.pgLabel.move(100, 0)
+        '''
+        
+        #self.pgLabel = QLabel(self)
+        
        
         # display main screen
         
@@ -213,6 +230,7 @@ class MangaMania(QMainWindow):
         self.sd = QDialog(self)
         self.sd.setWindowTitle('Search MangaFox database')
         self.sd.resize(900, 570)
+        self.sd.setMinimumSize(900, 570)
 
         self.searchLabel = QLabel(self.sd)
         self.searchLabel.setText('<b>Search:</b>')
@@ -831,6 +849,8 @@ class MangaMania(QMainWindow):
         
         print('Successfully fetched chapter info. %s chapters in total' % str(len(ch)) + '\n')
         
+        self.chapterList.clear()
+        
         for i in ch:
         
             #print(i[0] + ' ' + i[1])
@@ -849,18 +869,54 @@ class MangaMania(QMainWindow):
         
         if Scraper.fetchImage(self.chapterURLs[ch]):
         
-            self.pgPixmap = QPixmap('current_page.png')
+            self.d = QDialog(self)
+            self.d.setWindowTitle('foo')
+            self.d.resize(700, 500)
             
-            self.pgLabel = QLabel(self)
+            self.pgPixmap = QPixmap('current.jpg')
+                
+            self.pgLabel = QLabel(self.d)
             self.pgLabel.setPixmap(self.pgPixmap)
             self.pgLabel.adjustSize()
-            self.pgLabel.move(530, 80)
+            self.pgLabel.move(0, 0)
+            
+            self.scrollArea = QScrollArea(self.d)
+            self.scrollArea.setWidget(self.pgLabel)
+            
+            self.layout = QHBoxLayout()
+
+            self.layout.addWidget(self.scrollArea)
+
+            self.d.setLayout(self.layout)
+                        
+            self.d.exec_()
         
         else:
         
             print('Unable to fetch page image from image URL!')
-    
+            
+    def configure_positions(
+            self,
+            horizontal_position=0.5,
+            vertical_position=0.5):
+        self.horizontal_position = horizontal_position
+        self.vertical_position = vertical_position
 
+        scroll_bar = self.scrollArea.horizontalScrollBar()
+        scroll_bar.setValue(
+            self.horizontal_position *
+            self.imageLabel.width() -
+            scroll_bar.pageStep() /
+            2)
+
+        scroll_bar = self.scrollArea.verticalScrollBar()
+        scroll_bar.setValue(
+            self.vertical_position *
+            self.imageLabel.height() -
+            scroll_bar.pageStep() /
+            2)
+            
+    
 
 #end of class MangaMania
 

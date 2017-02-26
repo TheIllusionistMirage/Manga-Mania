@@ -99,7 +99,7 @@ class Scraper:
         '''
         
         r = requests.get(imageURL, stream=True)
-        with open('current_page.png', 'wb') as out_file:
+        with open('current.jpg', 'wb') as out_file:
             shutil.copyfileobj(r.raw, out_file)
         
         del r
