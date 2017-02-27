@@ -17,6 +17,7 @@
 
 import sys
 from scraper import Scraper
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
@@ -163,6 +164,16 @@ class MangaMania(QMainWindow):#, QWidget):
         self.aboutAction = QAction(QIcon('resources/images/about-icon.png'), '&About', self)
         self.aboutAction.setStatusTip('Show brief application info')
         self.aboutAction.triggered.connect(self.aboutInfo)
+        
+        # Previous page action
+        self.previousAction = QAction(self)
+        self.previousAction.setShortcut(Qt.Key_Left)
+        self.previousAction.triggered.connect(self.loadPreviousPage)
+        
+        # Next page action
+        self.nextAction = QAction(self)
+        self.nextAction.setShortcut(Qt.Key_Right)
+        self.nextAction.triggered.connect(self.loadNextPage)
 
         # Add menubar
         self.menubar = self.menuBar()
@@ -199,12 +210,27 @@ class MangaMania(QMainWindow):#, QWidget):
         self.previousLabel.adjustSize()
         #self.nextLabel.resize(50, 50)
         self.previousLabel.move(350, 35)
+        self.previousLabel.addAction(self.previousAction)
+        
+        self.previousText = QLabel(self)
+        self.previousText.setText('<b>Previous</b> (left arrow)')
+        self.previousText.adjustSize()
+        #self.nextLabel.resize(50, 50)
+        self.previousText.move(375, 37)
         
         self.nextLabel = QLabel(self)
         self.nextLabel.setPixmap(self.nextPixmap)
+        #self.nextLabel.setText('<b>Next</b> (right arrow)')
         self.nextLabel.adjustSize()
         #self.nextLabel.resize(50, 50)
-        self.nextLabel.move(380, 35)
+        self.nextLabel.move(1060, 35)
+        self.nextLabel.addAction(self.nextAction)
+        
+        self.nextText = QLabel(self)
+        self.nextText.setText('<b>Next</b> (right arrow)')
+        self.nextText.adjustSize()
+        #self.nextLabel.resize(50, 50)
+        self.nextText.move(940, 37)
         
         
         #self.pgPixmap = QPixmap('resources/images/search-icon.png')
@@ -886,10 +912,24 @@ class MangaMania(QMainWindow):#, QWidget):
             newPixmap = QPixmap('current.jpg')
             self.pgLabel.setPixmap(newPixmap)
             self.pgLabel.adjustSize()
+            
+            #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
+            #self.nextPageURL = self.chapterURLs[ch]
+            #print(self.chapterURLs[ch].split('/'))
         
         else:
         
             print('Unable to fetch page image from image URL!')            
+    
+    
+    def loadPreviousPage(self):
+        print('Previous page action initiated')
+    
+    
+    def loadNextPage(self):
+        print('Next page action initiated')
+        
+        #fetchNextPageURL()
 
 
 

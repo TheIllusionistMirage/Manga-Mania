@@ -70,6 +70,21 @@ class Scraper:
         del r
         
         return m
+        
+    
+    @staticmethod
+    def fetchNextPageURL(url):
+        # 'url' is the url of the current page
+        r = requests.get(url)
+        page = r.text
+        
+        bs = BeautifulSoup(page, 'lxml')
+        
+        results = bs.find('a', class_ = 'btn next_page')
+        
+        #print(results)
+        #print(str(results['href']))
+        return str(results['href'])
             
     
     @staticmethod
