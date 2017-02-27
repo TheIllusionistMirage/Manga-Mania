@@ -22,7 +22,7 @@ from PyQt5.QtGui import *
 
 
 
-class MangaMania(QMainWindow):
+class MangaMania(QMainWindow):#, QWidget):
 
     '''
     
@@ -144,7 +144,7 @@ class MangaMania(QMainWindow):
         #self.setGeometry(0, 0, 1100, 700)
         #self.resize(1100, 700)
         self.move(0,0)
-        self.setMinimumSize(1100, 650)
+        self.setFixedSize(1100, 650)
         self.setWindowTitle('MangaFox Search Scraper')
         
         # Search action
@@ -198,13 +198,13 @@ class MangaMania(QMainWindow):
         self.previousLabel.setPixmap(self.previousPixmap)
         self.previousLabel.adjustSize()
         #self.nextLabel.resize(50, 50)
-        self.previousLabel.move(530, 40)
+        self.previousLabel.move(350, 35)
         
         self.nextLabel = QLabel(self)
         self.nextLabel.setPixmap(self.nextPixmap)
         self.nextLabel.adjustSize()
         #self.nextLabel.resize(50, 50)
-        self.nextLabel.move(560, 40)
+        self.nextLabel.move(380, 35)
         
         
         #self.pgPixmap = QPixmap('resources/images/search-icon.png')
@@ -217,9 +217,23 @@ class MangaMania(QMainWindow):
         self.pgLabel.move(100, 0)
         '''
         
-        #self.pgLabel = QLabel(self)
+        #self.d = QDialog(self)
+        #self.d.setWindowTitle('foo')
+        #self.d.resize(700, 500)
         
-       
+        #self.pgPixmap = QPixmap('current.jpg')
+            
+        self.pgLabel = QLabel(self)
+        #self.pgLabel.setPixmap(self.pgPixmap)
+        self.pgLabel.adjustSize()
+        #pgLabel.move(300, 60)
+        
+        self.scrollArea = QScrollArea(self)
+        #self.setCentralWidget(self.scrollArea)
+        self.scrollArea.setWidget(self.pgLabel)
+        self.scrollArea.move(340, 60)
+        self.scrollArea.resize(750, 560)        
+               
         # display main screen
         
         self.show()
@@ -869,54 +883,15 @@ class MangaMania(QMainWindow):
         
         if Scraper.fetchImage(self.chapterURLs[ch]):
         
-            self.d = QDialog(self)
-            self.d.setWindowTitle('foo')
-            self.d.resize(700, 500)
-            
-            self.pgPixmap = QPixmap('current.jpg')
-                
-            self.pgLabel = QLabel(self.d)
-            self.pgLabel.setPixmap(self.pgPixmap)
+            newPixmap = QPixmap('current.jpg')
+            self.pgLabel.setPixmap(newPixmap)
             self.pgLabel.adjustSize()
-            self.pgLabel.move(0, 0)
-            
-            self.scrollArea = QScrollArea(self.d)
-            self.scrollArea.setWidget(self.pgLabel)
-            
-            self.layout = QHBoxLayout()
-
-            self.layout.addWidget(self.scrollArea)
-
-            self.d.setLayout(self.layout)
-                        
-            self.d.exec_()
         
         else:
         
-            print('Unable to fetch page image from image URL!')
-            
-    def configure_positions(
-            self,
-            horizontal_position=0.5,
-            vertical_position=0.5):
-        self.horizontal_position = horizontal_position
-        self.vertical_position = vertical_position
+            print('Unable to fetch page image from image URL!')            
 
-        scroll_bar = self.scrollArea.horizontalScrollBar()
-        scroll_bar.setValue(
-            self.horizontal_position *
-            self.imageLabel.width() -
-            scroll_bar.pageStep() /
-            2)
 
-        scroll_bar = self.scrollArea.verticalScrollBar()
-        scroll_bar.setValue(
-            self.vertical_position *
-            self.imageLabel.height() -
-            scroll_bar.pageStep() /
-            2)
-            
-    
 
 #end of class MangaMania
 
@@ -926,5 +901,6 @@ if __name__ == '__main__':
     
     qapp = QApplication(sys.argv)
     g = MangaMania()
-    r = qapp.exec_()    
+    g.show()
+    r = qapp.exec_()
     sys.exit(r)
