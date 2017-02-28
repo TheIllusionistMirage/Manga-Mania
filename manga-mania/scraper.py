@@ -141,9 +141,9 @@ class Scraper:
         with open('current.jpg', 'wb') as out_file:
             shutil.copyfileobj(r.raw, out_file)
         
-        pg = bs.find('div', class_='r m')
+        #pg = bs.find('div', class_='r m')
         
-        print(pg.text.split(' '))
+        #print(pg.text.split(' '))
         
         del r
         
