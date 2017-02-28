@@ -18,11 +18,16 @@ import shutil
 import requests
 from bs4 import BeautifulSoup
 
+DEFAULT_TIMEOUT = 5
+
 class Scraper:
 
     def __init__(self):
         
         foo = 1
+
+        # set the default timeout to 5 seconds
+        #self.DEFAULT_TIMEOUT = 5
         
         
     @staticmethod
@@ -30,7 +35,7 @@ class Scraper:
     
         if site == 'MangaFox':
         
-            r = requests.get(url)
+            r = requests.get(url, timeout = DEFAULT_TIMEOUT)
             page = r.text
             
             bs = BeautifulSoup(page, 'lxml')
@@ -52,7 +57,7 @@ class Scraper:
     @staticmethod
     def fetchAllChapters(url):
     
-        r = requests.get(url)
+        r = requests.get(url, timeout = DEFAULT_TIMEOUT)
         page = r.text
         
         bs = BeautifulSoup(page, 'lxml')
@@ -75,7 +80,7 @@ class Scraper:
     @staticmethod
     def fetchNextPageURL(url):
         # 'url' is the url of the current page
-        r = requests.get(url)
+        r = requests.get(url, timeout = DEFAULT_TIMEOUT)
         page = r.text
         
         bs = BeautifulSoup(page, 'lxml')
@@ -83,14 +88,33 @@ class Scraper:
         results = bs.find('a', class_ = 'btn next_page')
         
         #print(results)
-        #print(str(results['href']))
-        return str(results['href'])
+        
+        #print('Next page URL: ' + str(results['href']))
+        
+        rs = url.split('/')
+        rs.pop()
+        
+        #print(rs)
+        
+        suf = str(results['href'])
+        
+        if suf[-5:] != '.html':
+        
+            return ''
+        
+        nextURL = '/'.join(rs)
+        nextURL = nextURL + '/' + str(results['href'])
+        
+        #print(nextURL)
+        
+        #return str(results['href'])
+        return nextURL
             
     
     @staticmethod
     def fetchImage(url):
         
-        r = requests.get(url)
+        r = requests.get(url, timeout = DEFAULT_TIMEOUT)
         page = r.text
         
         bs = BeautifulSoup(page, 'lxml')
@@ -113,9 +137,13 @@ class Scraper:
                 shutil.copyfileobj(r.raw, f)
         '''
         
-        r = requests.get(imageURL, stream=True)
+        r = requests.get(imageURL, stream=True, timeout=5)
         with open('current.jpg', 'wb') as out_file:
             shutil.copyfileobj(r.raw, out_file)
+        
+        pg = bs.find('div', class_='r m')
+        
+        print(pg.text.split(' '))
         
         del r
         

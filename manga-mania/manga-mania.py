@@ -851,12 +851,12 @@ class MangaMania(QMainWindow):#, QWidget):
         self.updateRating()
         self.isRunning()
         
+        self.mSEARCH_URL = self.generateSearchURL()
+        
         print('Generated search URL string:')
-        print(self.generateSearchURL())
-        print()
+        print(self.mSEARCH_URL + '\n')
         
         #return self.generateSearchURL()
-        self.mSEARCH_URL = self.generateSearchURL()
         
         res = Scraper.search('MangaFox', self.mSEARCH_URL)
         
@@ -899,13 +899,22 @@ class MangaMania(QMainWindow):#, QWidget):
             self.chapterURLs[i[0]] = i[1]
             
         self.sd.close()
+        
+        #for i in range(self.chapterList.count()):
+            #print(i)
+            #qitem = self.chapterList.item(i)
+            #print(str(qitem.text()))
+        
+        self.currentChapterIndex = 0
             
 
     def openSelectedChapter(self):
     
         ch = str(self.chapterList.currentItem().text())
+        #print('current reow: ' + str(self.chapterList.currentRow()))
         print('Opening chapter \"' + ch + '\"...')
         print('Chapter URL: ' + self.chapterURLs[ch])
+        self.currentChapterIndex = self.chapterList.currentRow()
         
         if Scraper.fetchImage(self.chapterURLs[ch]):
         
@@ -914,22 +923,81 @@ class MangaMania(QMainWindow):#, QWidget):
             self.pgLabel.adjustSize()
             
             #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
-            #self.nextPageURL = self.chapterURLs[ch]
+            self.currentPageURL = self.chapterURLs[ch]
             #print(self.chapterURLs[ch].split('/'))
         
         else:
         
-            print('Unable to fetch page image from image URL!')            
+            print('Unable to fetch page image from image URL!')
     
     
     def loadPreviousPage(self):
+    
         print('Previous page action initiated')
     
     
     def loadNextPage(self):
-        print('Next page action initiated')
+    
+        print('Next page action initiated')        
         
-        #fetchNextPageURL()
+        nextURL = Scraper.fetchNextPageURL(self.currentPageURL)
+        
+        if nextURL != '':
+        
+            print('Page URL: ' + nextURL)
+        
+            if Scraper.fetchImage(nextURL):
+            
+                newPixmap = QPixmap('current.jpg')
+                self.pgLabel.setPixmap(newPixmap)
+                self.pgLabel.adjustSize()
+                
+                #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
+                self.currentPageURL = nextURL
+                #print(self.chapterURLs[ch].split('/'))
+            
+            else:
+            
+                print('Unable to fetch page image from image URL!')
+
+        else:
+        
+            print('Chapter ended, loading next chapter...')
+            
+            self.currentChapterIndex += 1
+            
+            if self.currentChapterIndex > self.chapterList.count() - 1:
+            
+                print('Finished all chapters! Find another manga!')
+                self.currentChapterIndex = 0
+            
+            else:
+            
+                self.openSubsequentChapter()
+
+
+    def openSubsequentChapter(self):
+    
+        ch = str(self.chapterList.item(self.currentChapterIndex).text())
+        #print('current reow: ' + str(self.chapterList.currentRow()))
+        print('Opening chapter \"' + ch + '\"...')
+        print('Chapter URL: ' + self.chapterURLs[ch])
+        self.currentChapterIndex = self.chapterList.currentRow()
+        self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
+        
+        if Scraper.fetchImage(self.chapterURLs[ch]):
+        
+            newPixmap = QPixmap('current.jpg')
+            self.pgLabel.setPixmap(newPixmap)
+            self.pgLabel.adjustSize()
+            
+            #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
+            self.currentPageURL = self.chapterURLs[ch]
+            #print(self.chapterURLs[ch].split('/'))
+        
+        else:
+        
+            print('Unable to fetch page image from image URL!')
 
 
 
