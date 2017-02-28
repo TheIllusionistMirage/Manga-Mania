@@ -4,6 +4,19 @@
 
 Manga-Mania is a simple desktop application for reading manga from popular sites across the internet! It is written in `python3`, with the generous aid of `pyqt5`, `beautiful-soup` and `requests`.
 
+
+## Features
+
+### Supported
+
+Ability to sequentially read all chapters of a given manga from [MangaFox](http://mangafox.me).
+
+### Planned
+
+* Provide support for other popular manga sites like KissManga, Mangahere, etc.
+* Improve UI
+
+
 ---------------
 
 **Legal**
