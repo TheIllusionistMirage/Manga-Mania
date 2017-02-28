@@ -146,7 +146,7 @@ class MangaMania(QMainWindow):#, QWidget):
         #self.resize(1100, 700)
         self.move(0,0)
         self.setFixedSize(1100, 650)
-        self.setWindowTitle('MangaFox Search Scraper')
+        self.setWindowTitle('Manga-Mania - Read manga with more fun!')
         
         # Search action
         self.searchAction = QAction(QIcon('resources/images/search-icon.png'), '&Search', self)
@@ -933,12 +933,45 @@ class MangaMania(QMainWindow):#, QWidget):
     
     def loadPreviousPage(self):
     
-        print('Previous page action initiated')
+        print('Previous page action initiated\n')
+        
+        nextURL = Scraper.fetchPreviousPageURL(self.currentPageURL)
+        
+        if nextURL != '':
+        
+            print('Page URL: ' + nextURL)
+        
+            if Scraper.fetchImage(nextURL):
+            
+                newPixmap = QPixmap('current.jpg')
+                self.pgLabel.setPixmap(newPixmap)
+                self.pgLabel.adjustSize()
+                
+                self.currentPageURL = nextURL
+            
+            else:
+            
+                print('Unable to fetch page image from image URL!')
+
+        else:
+        
+            print('Chapter ended, loading previous chapter...')
+            
+            self.currentChapterIndex -= 1
+            
+            if self.currentChapterIndex < 0:
+            
+                print('Cannot go to preceeding chapter, this is the first chapter!')
+                self.currentChapterIndex = 0
+            
+            else:
+            
+                self.openChapter()
     
     
     def loadNextPage(self):
     
-        print('Next page action initiated')        
+        print('Next page action initiated\n')        
         
         nextURL = Scraper.fetchNextPageURL(self.currentPageURL)
         
@@ -973,17 +1006,19 @@ class MangaMania(QMainWindow):#, QWidget):
             
             else:
             
-                self.openSubsequentChapter()
+                self.openChapter()
 
 
-    def openSubsequentChapter(self):
+    def openChapter(self):
     
         ch = str(self.chapterList.item(self.currentChapterIndex).text())
         #print('current reow: ' + str(self.chapterList.currentRow()))
         print('Opening chapter \"' + ch + '\"...')
         print('Chapter URL: ' + self.chapterURLs[ch])
-        self.currentChapterIndex = self.chapterList.currentRow()
         self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
+        self.currentChapterIndex = self.chapterList.currentRow()
+        #self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
+        #self.chapterList.setCurrentItem(self.chapterList.item(0))
         
         if Scraper.fetchImage(self.chapterURLs[ch]):
         

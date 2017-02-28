@@ -109,6 +109,41 @@ class Scraper:
         
         #return str(results['href'])
         return nextURL
+    
+    
+    @staticmethod
+    def fetchPreviousPageURL(url):
+        
+        # 'url' is the url of the current page
+        r = requests.get(url, timeout = DEFAULT_TIMEOUT)
+        page = r.text
+        
+        bs = BeautifulSoup(page, 'lxml')
+        
+        results = bs.find('a', class_ = 'btn prev_page')
+        
+        #print(results)
+        
+        #print('Next page URL: ' + str(results['href']))
+        
+        rs = url.split('/')
+        rs.pop()
+        
+        #print(rs)
+        
+        suf = str(results['href'])
+        
+        if suf[-5:] != '.html':
+        
+            return ''
+        
+        prevURL = '/'.join(rs)
+        prevURL = prevURL + '/' + str(results['href'])
+        
+        #print(nextURL)
+        
+        #return str(results['href'])
+        return prevURL
             
     
     @staticmethod
