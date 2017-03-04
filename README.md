@@ -4,7 +4,7 @@
 
 Manga-Mania is a simple desktop application for reading manga scraped from MangaFox (http://mangafox.me). It is written in `python3`, with the generous aid of `pyqt5`, `requests` and `beautiful-soup`.
 
-Here's a humble screenshot of me reading Bleach!
+Here's a humble screenshot of me reading Yu-Gi-Oh!
 
 ![Manga-Mania](screenshot.png)
 
