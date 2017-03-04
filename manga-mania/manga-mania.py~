@@ -1123,11 +1123,6 @@ class MangaMania(QMainWindow):#, QWidget):
         #self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
         #self.chapterList.setCurrentItem(self.chapterList.item(0))
         
-        self.currentChapterTotalPages = Scraper.fetchChapterInfo(self.chapterURLs[ch])
-        
-        self.currentPageBox.setText(str(self.currentPageNumber))
-        self.totalPageText.setText('of <b>' + str(self.currentChapterTotalPages) + '</b>')
-        
         if Scraper.fetchPageImage(self.chapterURLs[ch]):
         
             newPixmap = QPixmap('current.jpg')
