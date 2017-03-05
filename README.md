@@ -18,10 +18,33 @@ Here's a humble screenshot of me reading Yu-Gi-Oh!
 
 ### Planned
 
-* Add an 'history' feature, i.e., remember where the user last left off
+* Add a 'history' feature, i.e., remember where the user last left off
 * Improve UI (display app status, search results & chapter info in a more appealing way)
 * Provide support for other popular manga sites like KissManga, Mangahere, etc.
 
+### Running Manga Mania
+
+`Manga Mania` has a few dependencies:
+
+* PyQt5
+* requests
+* BeautifulSoup4
+
+You can easily install them using `pip` like so:
+
+`pip install pyqt5 requests beautiflsoup4`
+
+To run the script, clone the repo and switch to the `manga-mania` directory and run `manga-mania.py`
+
+```
+$ git clone https://github.com/TheIllusionistMirage/Manga-Mania
+$ cd Manga-Mania/manga-mania
+$ python3 manga-mania.py
+```
+
+### Problems & Bugs
+
+If you encounter anything out of the ordinary, just drop me a mail at `koushtav at fleptic dot eu`.
 
 ---------------
 
