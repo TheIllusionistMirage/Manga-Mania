@@ -135,7 +135,7 @@ class Scraper:
         
         for i in results:
         
-            chapterList.insert(0, [i.text, i['href'] + '1.html'])
+            chapterList.insert(0, [i.text, i['href']])
             
         del r
         del bs

@@ -137,15 +137,18 @@ class MangaMania(QMainWindow):#, QWidget):
         # Set advanced search options ON
         self.sADVANCED_OPTIONS = '&advopts=1i'
     
-            
+        # permanent status message label
+        self.statusLabel = QLabel('<b>Now reading</b>: No chapter loaded', self)    
+        
         # Add status bar
         self.statusBar().showMessage('Ready')
+        self.statusBar().addPermanentWidget(self.statusLabel)
 
         # Set initial geometry
         #self.setGeometry(0, 0, 1100, 700)
-        #self.resize(1100, 700)
+        self.resize(1100, 650)
         self.move(0,0)
-        self.setFixedSize(1100, 650)
+        #self.setFixedSize(1100, 650)
         self.setWindowTitle('Manga-Mania - Read manga with more fun!')
         
         # Search action
@@ -242,11 +245,14 @@ class MangaMania(QMainWindow):#, QWidget):
         self.currentPageBox.setText('0')
         self.currentPageBox.resize(30, 25)
         self.currentPageBox.move(718, 32)
+        self.currentPageBox.setReadOnly(True)
         
         # TODO: Make the jump action depend on the `editingFinished`
         # event rather than `returnPressed`
         self.currentPageBox.returnPressed.connect(self.jumpToPage)
         
+        # denotes whether a manga is currently loaded
+        self.isMangaLoaded = False
         
         #self.pgPixmap = QPixmap('resources/images/search-icon.png')
         '''
@@ -284,7 +290,8 @@ class MangaMania(QMainWindow):#, QWidget):
         
         self.sd = QDialog(self)
         self.sd.setWindowTitle('Search MangaFox database')
-        self.sd.resize(900, 570)
+        #self.sd.resize(900, 570)
+        self.sd.setFixedSize(900, 570)
         self.sd.setMinimumSize(900, 570)
 
         self.searchLabel = QLabel(self.sd)
@@ -904,6 +911,8 @@ class MangaMania(QMainWindow):#, QWidget):
     
     def populateChapterList(self):
     
+        self.isMangaLoaded = False
+        
         print('Populating chapter list...\n')
         
         title = str(self.resultList.currentItem().text())
@@ -933,6 +942,17 @@ class MangaMania(QMainWindow):#, QWidget):
             #print(str(qitem.text()))
         
         self.currentChapterIndex = 0
+        
+        self.currentPageBox.setReadOnly(True)
+        self.currentPageBox.setText('0')
+        
+        self.totalPageText.setText('of <b>0</b>')
+        
+        newPixmap = QPixmap('')
+        self.pgLabel.setPixmap(newPixmap)
+        self.pgLabel.adjustSize()
+        
+        self.statusLabel.setText('<b>Now reading</b>: No chapter loaded')
             
 
     def getChapterBaseURL(self, url):
@@ -967,6 +987,8 @@ class MangaMania(QMainWindow):#, QWidget):
         self.currentPageBox.setText(str(self.currentPageNumber))
         self.totalPageText.setText('of <b>' + str(self.currentChapterTotalPages) + '</b>')
         
+        self.isMangaLoaded = True
+        
         if Scraper.fetchPageImage(self.chapterURLs[ch]):
         
             newPixmap = QPixmap('current.jpg')
@@ -976,6 +998,11 @@ class MangaMania(QMainWindow):#, QWidget):
             #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
             self.currentPageURL = self.chapterURLs[ch]
             #print(self.chapterURLs[ch].split('/'))
+            
+            self.currentPageBox.setReadOnly(False)
+            #self.statusLabel.setText('<b>Now reading</b>: ' + ch)
+            
+            self.updateStatusMessage()
         
         else:
         
@@ -984,6 +1011,10 @@ class MangaMania(QMainWindow):#, QWidget):
     
     def loadPreviousPage(self):
     
+        if self.isMangaLoaded == False:
+        
+            return
+
         print('Previous page action initiated\n')
         
         if self.currentPageNumber > 1:
@@ -1025,6 +1056,10 @@ class MangaMania(QMainWindow):#, QWidget):
     
     def loadNextPage(self):
     
+        if self.isMangaLoaded == False:
+        
+            return
+        
         print('Next page action initiated\n')
         
         if self.currentPageNumber < self.currentChapterTotalPages:
@@ -1062,54 +1097,10 @@ class MangaMania(QMainWindow):#, QWidget):
             
                 self.openChapter()
     
-        '''print('Next page action initiated\n')        
-        
-        nextURL = Scraper.fetchNextPageURL(self.currentPageURL)
-        
-        if nextURL != '':
-        
-            print('Page URL: ' + nextURL)
-        
-            if Scraper.fetchPageImage(nextURL):
-            
-                newPixmap = QPixmap('current.jpg')
-                self.pgLabel.setPixmap(newPixmap)
-                self.pgLabel.adjustSize()
-                
-                #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
-                self.currentPageURL = nextURL
-                #print(self.chapterURLs[ch].split('/'))
-                
-                self.currentPageNumber += 1
-                
-                self.currentPageBox.setText(str(self.currentPageNumber))
-            
-            else:
-            
-                print('Unable to fetch page image from image URL!')
-
-        else:
-        
-            print('Chapter ended, loading next chapter...')
-            
-            self.currentChapterIndex += 1
-            self.currentPageNumber = 0
-            
-            if self.currentChapterIndex > self.chapterList.count() - 1:
-            
-                print('Finished all chapters! Find another manga!')
-                self.currentChapterIndex = 0
-            
-            else:
-            
-                self.openChapter()
-                '''
-
 
     def openChapter(self):
     
         ch = str(self.chapterList.item(self.currentChapterIndex).text())
-        #print('current reow: ' + str(self.chapterList.currentRow()))
         
         self.chapterBaseURL = self.getChapterBaseURL(self.chapterURLs[ch])
         print('Chapter base URL: ' + self.chapterBaseURL)
@@ -1120,13 +1111,13 @@ class MangaMania(QMainWindow):#, QWidget):
         print('Chapter URL: ' + self.chapterURLs[ch])
         self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
         self.currentChapterIndex = self.chapterList.currentRow()
-        #self.chapterList.setCurrentItem(self.chapterList.item(self.currentChapterIndex))
-        #self.chapterList.setCurrentItem(self.chapterList.item(0))
         
         self.currentChapterTotalPages = Scraper.fetchChapterInfo(self.chapterURLs[ch])
         
         self.currentPageBox.setText(str(self.currentPageNumber))
         self.totalPageText.setText('of <b>' + str(self.currentChapterTotalPages) + '</b>')
+        
+        self.isMangaLoaded = True
         
         if Scraper.fetchPageImage(self.chapterURLs[ch]):
         
@@ -1134,11 +1125,10 @@ class MangaMania(QMainWindow):#, QWidget):
             self.pgLabel.setPixmap(newPixmap)
             self.pgLabel.adjustSize()
             
-            #pageNo = Scraper.fetchNextPageURL(self.chapterURLs[ch])
             self.currentPageURL = self.chapterURLs[ch]
-            #print(self.chapterURLs[ch].split('/'))
             
             self.currentPageBox.setText(str(self.currentPageNumber))
+            self.updateStatusMessage()
         
         else:
         
@@ -1147,6 +1137,10 @@ class MangaMania(QMainWindow):#, QWidget):
     
     def jumpToPage(self):
     
+        if self.currentPageBox.isReadOnly():
+        
+            return
+        
         self.currentPageBox.clearFocus()
         self.scrollArea.setFocus()
         
@@ -1154,7 +1148,6 @@ class MangaMania(QMainWindow):#, QWidget):
         print('Jumping to page: ' + str(pageNo))
         
         self.currentPageNumber = pageNo
-        #self.openChapter()
         
         nextURL = self.chapterBaseURL + str(self.currentPageNumber) + '.html'
         
@@ -1165,14 +1158,24 @@ class MangaMania(QMainWindow):#, QWidget):
             self.pgLabel.adjustSize()
             
             self.currentPageURL = nextURL
-            
-            #self.currentPageBox.clearFocus()
-            #self.pgLabel.setFocus()
         
         else:
         
-            print('Unable to fetch page image from image URL!')        
+            print('Unable to fetch page image from image URL!')
+            
 
+    def updateStatusMessage(self):
+    
+        s = self.chapterBaseURL.split('/')
+        volStr = s[-3]
+        chStr = s[-2]
+        
+        vol = volStr.split('v')[1]
+        chap = chStr.split('c')[1]
+        
+        ch = str(self.chapterList.item(self.currentChapterIndex).text())
+        self.statusLabel.setText('<b>Now reading</b>: ' + ch + ', <b>Volume</b>: ' + vol + ', <b>Chapter</b>: ' + chap)
+    
 
 #end of class MangaMania
 
