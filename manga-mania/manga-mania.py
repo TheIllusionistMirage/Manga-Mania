@@ -16,6 +16,8 @@
 
 
 import sys
+import os
+from pathlib import Path
 from scraper import Scraper
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -1187,4 +1189,11 @@ if __name__ == '__main__':
     g = MangaMania()
     g.show()
     r = qapp.exec_()
+    
+    currentPage = Path('current.jpg')
+    
+    if currentPage.is_file():
+    
+        os.remove('current.jpg')
+        
     sys.exit(r)
