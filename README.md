@@ -8,7 +8,7 @@ Here are a few screen captures.
 
 ![Manga-Mania-1](screenshots/snapshot1.png)
 
-![Manga-Mania-2](screenshots/snapsshot2.png)
+![Manga-Mania-2](screenshots/snapshot2.png)
 
 
 ## Features
