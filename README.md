@@ -32,7 +32,7 @@ Here's a humble screenshot of me reading Yu-Gi-Oh!
 
 You can easily install them using `pip` like so:
 
-`pip install pyqt5 requests beautiflsoup4`
+`# pip install pyqt5 requests beautifulsoup4`
 
 To run the script, clone the repo and switch to the `manga-mania` directory and run `manga-mania.py`
 

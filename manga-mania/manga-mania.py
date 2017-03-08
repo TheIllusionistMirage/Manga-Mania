@@ -148,9 +148,10 @@ class MangaMania(QMainWindow):#, QWidget):
 
         # Set initial geometry
         #self.setGeometry(0, 0, 1100, 700)
-        self.resize(1100, 650)
-        self.move(0,0)
+        #self.resize(1100, 650)
+        self.move(20,50)
         #self.setFixedSize(1100, 650)
+        self.setMinimumSize(1100, 650)
         self.setWindowTitle('Manga-Mania - Read manga with more fun!')
         
         # Search action
@@ -172,12 +173,12 @@ class MangaMania(QMainWindow):#, QWidget):
         
         # Previous page action
         self.previousAction = QAction(self)
-        self.previousAction.setShortcut(Qt.Key_Left)
+        self.previousAction.setShortcut(Qt.Key_A)
         self.previousAction.triggered.connect(self.loadPreviousPage)
         
         # Next page action
         self.nextAction = QAction(self)
-        self.nextAction.setShortcut(Qt.Key_Right)
+        self.nextAction.setShortcut(Qt.Key_D)
         self.nextAction.triggered.connect(self.loadNextPage)
 
         # Add menubar
@@ -195,7 +196,7 @@ class MangaMania(QMainWindow):#, QWidget):
         
         # Main display area
         
-        self.chapterLabel = QLabel('<b>Chapter:</b>', self)
+        self.chapterLabel = QLabel('<b>Chapters:</b>', self)
         self.chapterLabel.move(20, 40)
         self.chapterLabel.adjustSize()
         
@@ -218,7 +219,7 @@ class MangaMania(QMainWindow):#, QWidget):
         self.previousLabel.addAction(self.previousAction)
         
         self.previousText = QLabel(self)
-        self.previousText.setText('<b>Previous</b> (left arrow)')
+        self.previousText.setText('<b>Previous Page</b> (<b>A</b>)')
         self.previousText.adjustSize()
         #self.nextLabel.resize(50, 50)
         self.previousText.move(375, 37)
@@ -232,21 +233,25 @@ class MangaMania(QMainWindow):#, QWidget):
         self.nextLabel.addAction(self.nextAction)
         
         self.nextText = QLabel(self)
-        self.nextText.setText('<b>Next</b> (right arrow)')
+        self.nextText.setText('<b>Next Page</b> (<b>D</b>)')
         self.nextText.adjustSize()
         #self.nextLabel.resize(50, 50)
         self.nextText.move(940, 37)
         
+        self.pageLabel = QLabel(self)
+        self.pageLabel.setText('<b>Page</b>')
+        #self.pageLabel.move(750, 30)
+        
         self.totalPageText = QLabel(self)
         self.totalPageText.setText('of <b>0</b>')
-        self.totalPageText.move(750, 30)
+        #self.totalPageText.move(750, 30)
         
         self.currentPageBox = QLineEdit(self)
         # a single chapter of a manga typically has <= 100 pages
         self.currentPageBox.setMaxLength(2)
         self.currentPageBox.setText('0')
         self.currentPageBox.resize(30, 25)
-        self.currentPageBox.move(718, 32)
+        #self.currentPageBox.move(718, 32)
         self.currentPageBox.setReadOnly(True)
         
         # TODO: Make the jump action depend on the `editingFinished`
@@ -281,7 +286,55 @@ class MangaMania(QMainWindow):#, QWidget):
         #self.setCentralWidget(self.scrollArea)
         self.scrollArea.setWidget(self.pgLabel)
         self.scrollArea.move(340, 60)
-        self.scrollArea.resize(750, 560)        
+        self.scrollArea.resize(750, 560)
+        self.scrollArea.setAlignment(Qt.AlignHCenter)
+        
+        # Set main screen layout
+        
+        self.grid = QGridLayout()        
+        #self.grid.setSpacing(20)
+        
+        self.grid.addWidget(self.chapterLabel, 1, 1)
+        self.grid.addWidget(self.previousLabel, 1, 7)
+        self.grid.addWidget(self.previousText, 1, 8)
+        self.grid.addWidget(self.pageLabel, 1, 28)
+        self.grid.addWidget(self.currentPageBox, 1, 30, 1, 1)
+        self.grid.addWidget(self.totalPageText, 1, 31)
+        self.grid.addWidget(self.nextLabel, 1, 53)
+        self.grid.addWidget(self.nextText, 1, 54)
+        self.grid.addWidget(self.chapterList, 3, 1, 20, 5)
+        #self.grid.addWidget(self.pgLabel, 3, 5, 20, 20)
+        self.grid.addWidget(self.scrollArea, 3, 6, 20, 50)
+        
+        self.widget = QWidget(self)
+        self.widget.setLayout(self.grid)
+        
+        #self.widget.resizeEvent.connect(self.resizeHandler)
+        
+        self.setCentralWidget(self.widget)
+        
+        
+        '''
+        self.hbox = QHBoxLayout()
+        self.hbox.addStretch(2)
+        self.hbox.addWidget(self.chapterList)
+        self.hbox.addWidget(self.scrollArea)
+        self.hbox.addWidget(self.chapterLabel)
+        self.hbox.addWidget(self.previousLabel)
+        self.hbox.addWidget(self.previousText)
+        self.hbox.addWidget(self.nextLabel)
+        self.hbox.addWidget(self.nextText)
+        
+        #self.setLayout(self.hbox)
+        
+        self.widget = QWidget(self)
+        #self.setCentralWidget(self.widget)
+        
+        self.widget.setLayout(self.hbox)
+        
+        self.setCentralWidget(self.widget)
+        '''
+        
                
         # display main screen
         
@@ -1005,6 +1058,8 @@ class MangaMania(QMainWindow):#, QWidget):
             #self.statusLabel.setText('<b>Now reading</b>: ' + ch)
             
             self.updateStatusMessage()
+            
+            self.resetScrollArea()
         
         else:
         
@@ -1035,6 +1090,8 @@ class MangaMania(QMainWindow):#, QWidget):
                 self.currentPageURL = nextURL
                 
                 self.currentPageBox.setText(str(self.currentPageNumber))
+                
+                self.resetScrollArea()
             
             else:
             
@@ -1079,6 +1136,8 @@ class MangaMania(QMainWindow):#, QWidget):
                 
                 self.currentPageURL = nextURL                
                 self.currentPageBox.setText(str(self.currentPageNumber))
+                
+                self.resetScrollArea()
             
             else:
             
@@ -1131,6 +1190,8 @@ class MangaMania(QMainWindow):#, QWidget):
             
             self.currentPageBox.setText(str(self.currentPageNumber))
             self.updateStatusMessage()
+            
+            self.resetScrollArea()
         
         else:
         
@@ -1177,6 +1238,28 @@ class MangaMania(QMainWindow):#, QWidget):
         
         ch = str(self.chapterList.item(self.currentChapterIndex).text())
         self.statusLabel.setText('<b>Now reading</b>: ' + ch + ', <b>Volume</b>: ' + vol + ', <b>Chapter</b>: ' + chap)
+        
+
+    def resetScrollArea(self):
+    
+        self.scrollArea.verticalScrollBar().setValue(0)
+        self.scrollArea.horizontalScrollBar().setValue(0)
+        
+
+    '''
+    def resizeEvent(self, event):
+    
+        #QMainWindow.resizeEvent(event)
+        
+        #print('foobar')
+        
+        self.currentPageBox.move(self.pageLabel.pos() + QPoint(self.pageLabel.width(), self.pageLabel.height()-3))
+    '''
+
+
+    #def resizeHandle(self):
+    #
+    #    print("Foobar")
     
 
 #end of class MangaMania
