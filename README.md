@@ -6,9 +6,9 @@ Manga-Mania is a simple desktop application for reading manga scraped from Manga
 
 Here are a few screen captures.
 
-![Manga-Mania-1](screenshots/screenshot1.png)
+![Manga-Mania-1](screenshots/snapshot1.png)
 
-![Manga-Mania-2](screenshots/screenshot2.png)
+![Manga-Mania-2](screenshots/snapsshot2.png)
 
 
 ## Features
